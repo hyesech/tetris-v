@@ -58,9 +58,9 @@ const create = () => {
   draw();
 };
 
-// DROP: 1초마다 반복
-const drop = () => {
-  console.log("FUNC: DROP");
+// LOOP: 1초마다 반복
+const loop = () => {
+  console.log("FUNC: LOOP");
 };
 
 /*
@@ -93,4 +93,4 @@ init();
 
 create();
 
-setInterval(drop, 1000);
+setInterval(loop, 1000);
