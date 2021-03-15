@@ -121,14 +121,14 @@ const loop = () => {
     });
 
     // 줄 삭제 가능한지 체크: rows가 전부 1인 경우
-    checkRows();
+    checkLines();
     // 다음 위치에 새 블록 생성
     create();
   }
 };
 
 /*
-    Util 함수: draw, checkRows, is
+    Util 함수: draw, checkLines, is
 */
 const draw = () => {
   console.log("func: draw");
@@ -148,8 +148,31 @@ const draw = () => {
   });
 };
 
-const checkRows = () => {
+const checkLines = () => {
   console.log("func: check rows");
+
+  // 완성된 줄(Line)의 index 값을 담을 배열
+  const completeLine = [];
+
+  // tetrisData를 tr(줄) 단위로 순회: 모든 칸이 2인 경우 index 값을 completeLine 배열에 push
+  tetrisData.forEach((tr, i) => {
+    let lineCount = 0;
+    tr.forEach((td, j) => {
+      if (td === 2) {
+        lineCount++;
+      }
+    });
+    if (lineCount === 10) {
+      completeLine.push(i);
+    }
+  });
+
+  // completeLine에 담긴 index 값에 해당하는 줄 값을 0으로 변경
+  // completeLine 배열의 길이 (0이 된 줄 수) 만큼 tetrisData 배열의 앞쪽에 새 tr 배열을 추가
+  completeLine.forEach((tr, i) => {
+    console.log(tr);
+  });
+  console.log(completeLine);
 };
 
 /*
