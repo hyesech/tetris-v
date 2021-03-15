@@ -112,6 +112,9 @@ const loop = () => {
     // 매 loop마다 반복해야 하는 작업
     currentPosition = nextPosition;
     draw();
+
+    // Space 구현
+    return true;
   } else if (!canMove) {
     console.log("이동불가 ---> 색상 변경");
     movingBlocks.forEach((cell) => {
@@ -122,6 +125,9 @@ const loop = () => {
     checkLines();
     // 다음 위치에 새 블록 생성
     create();
+
+    // Space 구현
+    return false;
   }
 };
 
@@ -291,7 +297,8 @@ window.addEventListener("keyup", (e) => {
     }
 
     case "ArrowDown": {
-      console.log("down");
+      while (loop()) {}
+      break;
     }
   }
 });
