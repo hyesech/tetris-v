@@ -115,7 +115,7 @@ const loop = () => {
     currentPosition = nextPosition;
     draw();
   } else if (!canMove) {
-    console.log("이동불가");
+    console.log("이동불가 ---> 색상 변경");
     movingBlocks.forEach((cell) => {
       tetrisData[cell[0]][cell[1]] = 2;
     });
