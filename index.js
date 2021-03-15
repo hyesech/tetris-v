@@ -139,8 +139,6 @@ const draw = () => {
         tetris.children[i].children[j].className = "blue";
       } else if (td === 2) {
         tetris.children[i].children[j].className = "red";
-      } else {
-        console.log("문제있음.");
       }
     });
   });
@@ -179,21 +177,13 @@ const checkLines = () => {
 window.addEventListener("keyup", (e) => {
   // 누르는 key의 방향에 따라 분기문 작성
   switch (e.code) {
-    case "Space":
-      // 한 번에 다운
-      console.log("Space");
-      break;
-
-    case "ArrowLeft":
+    case "ArrowLeft": {
       // 왼 쪽으로 한 칸 이동
       console.log("Left");
-
       // 다음 위치 설정
       const nextPosition = [currentPosition[0], currentPosition[1] - 1];
-
       // FLAG: 기본값 true(이동 가능)
       let canUserMove = true;
-
       // block 생성
       let block = currentBlock;
 
@@ -210,14 +200,14 @@ window.addEventListener("keyup", (e) => {
           j < currentPosition[1] + block.length;
           j++
         ) {
-          console.log(tetrisData[i]);
-          if (!tetrisData[i] || !tetrisData[i][j]) continue;
-
+          console.log(currentPosition[1]);
+          console.log(tetrisData[1]);
           if (
-            (tetrisData[i][j] === 1 && tetrisData[i] === undefined) ||
+            (tetrisData[i][j] === 1 && currentPosition[1] === 0) ||
             tetrisData[i][j - 1] === 2
           ) {
-            // 움직일 수 있는 블록인 경우 && 가장 왼쪽 열에 도달한 경우 || 왼쪽에 값이 2인 block이 있는 경우
+            // 왼쪽 끝에 도달한 경우 || 왼쪽에 값이 2인 block이 있는 경우
+            console.log("cant go left");
             canUserMove = false;
           }
         }
@@ -229,25 +219,80 @@ window.addEventListener("keyup", (e) => {
 
         // tetrisData 배열에 현재 블록 위치 업데이트
         tetrisData.forEach((tr, i) => {
-          tr.forEach((td, j) => {
-            if (td === 1 && tetrisData[i] && tetrisData[i][j - 1] !== 2) {
+          for (let j = 0; j < tr.length; j++) {
+            const td = tr[j];
+            if (tetrisData[i][j - 1] === 0 && td !== 2) {
               tetrisData[i][j - 1] = td;
               tetrisData[i][j] = 0;
             }
-          });
+          }
         });
         draw();
       }
       // 그 외의 경우
       break;
+    }
 
-    case "ArrowRight":
+    case "ArrowRight": {
       // 오른 쪽으로 한 칸 이동
       console.log("Right");
-      break;
 
-    default:
+      // 다음 위치 설정
+      const nextPosition = [currentPosition[0], currentPosition[1] + 1];
+      // FLAG: 기본값 true(이동 가능)
+      let canUserMove = true;
+      // block 생성
+      let block = currentBlock;
+
+      // 현재 위치에서 한 칸 오른쪽을 탐색
+      for (
+        let i = currentPosition[0];
+        i < currentPosition[0] + block.length;
+        i++
+      ) {
+        // 오른쪽으로 갈 수 없는 경우 반복문 escape
+        if (!canUserMove) break;
+        for (
+          let j = currentPosition[1];
+          j < currentPosition[1] + block.length;
+          j++
+        ) {
+          console.log(currentPosition[1]);
+          console.log(tetrisData[1]);
+          if (
+            tetrisData[i][j] === 1 &&
+            ((tetrisData[i] && tetrisData[i][j + 1] === undefined) ||
+              (tetrisData[i] && tetrisData[i][j + 1] === 2))
+          ) {
+            // 오른쪽 끝에 도달한 경우 || 오른쪽에 값이 2인 block이 있는 경우
+            console.log("cant go right");
+            canUserMove = false;
+          }
+        }
+      }
+
+      // canUserMove === true
+      if (canUserMove) {
+        currentPosition = nextPosition;
+
+        // tetrisData 배열에 현재 블록 위치 업데이트
+        tetrisData.forEach((tr, i) => {
+          for (var j = tr.length - 1; j >= 0; j--) {
+            const td = tr[j];
+            if (tetrisData[i][j + 1] === 0 && td !== 2) {
+              tetrisData[i][j + 1] = td;
+              tetrisData[i][j] = 0;
+            }
+          }
+        });
+        draw();
+      }
       break;
+    }
+
+    case "ArrowDown": {
+      console.log("down");
+    }
   }
 });
 
