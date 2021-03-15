@@ -5,6 +5,7 @@ const ROWS = 10; // 가로
 // 게임 상수 선언
 const tetris = document.querySelector("#tetris");
 const blockData = {
+  name: "block",
   shape: [
     [0, 0],
     [1, 1],
@@ -14,6 +15,7 @@ const blockData = {
 
 // 전역 변수 선언
 var tetrisData = [];
+var currentBlock = [];
 var currentPosition = []; // 변경된다.
 
 /*
@@ -47,10 +49,11 @@ const create = () => {
   currentPosition = [-1, 4];
 
   // 블록 데이터 생성: 맨 윗줄을 삭제하고 연산한다.
-  const block = blockData.shape;
-  block.slice(1).forEach((col, i) => {
-    col.forEach((row, j) => {
-      tetrisData[i][j + 4] = row;
+  currentBlock = blockData.shape;
+
+  currentBlock.slice(1).forEach((tr, i) => {
+    tr.forEach((td, j) => {
+      tetrisData[i][j + 4] = td;
     });
   });
 
@@ -62,17 +65,17 @@ const create = () => {
 const loop = () => {
   console.log("FUNC: LOOP");
 
-  // blockData로부터 block 생성
-  const block = blockData.shape;
+  // 다음 위치 설정
+  const nextPosition = [currentPosition[0] + 1, currentPosition[1]];
 
   // 움직이고 있는 Block의 좌표값을 담을 배열
   const movingBlocks = [];
 
-  // 다음 위치 설정
-  const nextPosition = [currentPosition[0] + 1, currentPosition[1]];
-
   // FLAG: 기본값 true(이동 가능)
   let canMove = true;
+
+  // currentBlock(2x3)로부터 block 생성
+  let block = currentBlock;
 
   // 현재 위치에서 한 칸 아래를 탐색
   console.log(currentPosition[0], currentPosition[1]);
@@ -87,7 +90,7 @@ const loop = () => {
         // 움직일 수 있는 Block인 경우
         movingBlocks.push([i, j]);
         if (tetrisData[i + 1] === undefined || tetrisData[i + 1][j] === 2) {
-          // 움직일 수 없는 Block인 경우: 아래에 블럭이 있거나 최하단인 경우
+          // 최하단에 도달한 경우 || 아래에 값이 2인 block이 있는 경우
           canMove = false;
         }
       }
@@ -100,7 +103,7 @@ const loop = () => {
     console.log(movingBlocks);
 
     // tetrisData 배열에 현재 블록 위치 업데이트
-    for (let i = tetrisData.length - 1; i > 0; i--) {
+    for (let i = tetrisData.length - 1; i >= 0; i--) {
       const tr = tetrisData[i];
       tr.forEach((td, j) => {
         if (td === 1 && tetrisData[i + 1] && tetrisData[i + 1][j] !== 2) {
@@ -126,7 +129,7 @@ const loop = () => {
 };
 
 /*
-    Util 함수: draw, checkRows
+    Util 함수: draw, checkRows, is
 */
 const draw = () => {
   console.log("func: draw");
