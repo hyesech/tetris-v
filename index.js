@@ -7,7 +7,6 @@ const tetris = document.querySelector("#tetris");
 const blockData = {
   name: "block",
   shape: [
-    [0, 0],
     [1, 1],
     [1, 1],
   ],
@@ -46,12 +45,12 @@ const create = () => {
   console.log("FUNC: CREATE");
 
   // 블록 스폰 위치: 가상의 맨 윗줄이 있는 것처럼 연산
-  currentPosition = [-1, 4];
+  currentPosition = [0, 4];
 
   // 블록 데이터 생성: 맨 윗줄을 삭제하고 연산한다.
   currentBlock = blockData.shape;
 
-  currentBlock.slice(1).forEach((tr, i) => {
+  currentBlock.forEach((tr, i) => {
     tr.forEach((td, j) => {
       tetrisData[i][j + 4] = td;
     });
