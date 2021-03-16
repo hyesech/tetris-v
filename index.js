@@ -157,7 +157,7 @@ const draw = () => {
       } else if (td === 1) {
         tetris.children[i].children[j].className = "blue";
       } else if (td === 2) {
-        tetris.children[i].children[j].className = "red";
+        tetris.children[i].children[j].className = "grey";
       }
     });
   });
