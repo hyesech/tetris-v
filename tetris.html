@@ -6,18 +6,104 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
     <title>Tetris</title>
     <style>
-        #tetris {
-            border-collapse: collapse;
+        /* 브라우저 화면 구조 */
+        body {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        #tetris-table {
-            border:1px solid blue;
-            width: 20px;
-            height: 20px;
+        header {
+            width: 100vw;
+            height: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1E50FF;
+        }
+        aside {
+            width: auto;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        section {
+            width: 350px;
+            height: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        footer {
+            width: 100vw;
+            height: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #F0F0F0;
+        }
+        footer:hover {
+            cursor: s-resize;
+        }
+
+        /*  */
+        div {
+            width: 100%;
+            height: inherit;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #F0F0F0;
+        }
+        div:hover {
+            cursor: move;
+        }
+
+        /* 게임보드 세팅 */
+        #tetris {
+            width: inherit;
+            height: inherit;
+
+        }
+        #tetris tr{
+            width: inherit;
+            height: inherit;
+        }
+        #tetris td {
+            border: 2px solid white;
+            border-radius: 0.5rem;
+            width: 1.7em;
+            height: 1.7rem;
+        }
+        td.white {
+            background-color: #F0F0F0;
+        }
+        td.blue {
+            background-color: #1E50FF;
+        }
+        td.grey {
+            background-color: #CCCCCC;
         }
     </style>
 </head>
 <body>
-    <table id="tetris"></table>
-    <script src="./tetris.js"></script>
+    <aside id="left"><div>LEFT</div></aside>
+    <section>
+        <header>TETRIS</header>
+        <table id="tetris"></table>
+        <footer id="down">DOWN</footer>
+    </section>
+    <aside id="right"><div>RIGHT</div></aside>
+
+    <script type="text/javascript" src="index.js"></script>
 </body>
 </html>
