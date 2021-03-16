@@ -4,6 +4,8 @@ const ROWS = 10; // 가로
 
 // 게임 상수 선언
 const tetris = document.querySelector("#tetris");
+const cursorLeft = document.querySelector("#left");
+const cursorRight = document.querySelector("#right");
 const blockData = {
   name: "block",
   shape: [
@@ -145,7 +147,7 @@ const loop = () => {
 };
 
 /*
-    UTIL 함수: draw, checkLines
+    UTIL 함수: draw, checkLines, getMousePosition
 */
 const draw = () => {
   tetrisData.forEach((tr, i) => {
@@ -192,118 +194,213 @@ const checkLines = () => {
   EventListener
 */
 
-// Keyboard 조작을 위한 event listener 추가
-window.addEventListener("keydown", (e) => {
-  // 누르는 key의 방향에 따라 분기문 작성
-  switch (e.code) {
-    case "ArrowLeft": {
-      // 다음 위치 설정
-      const nextPosition = [currentPosition[0], currentPosition[1] - 1];
-      // FLAG: 기본값 true(이동 가능)
-      let canUserMove = true;
-      // block 생성
-      let block = currentBlock;
+// 마우스 커서가 #left와 충돌
+cursorLeft.addEventListener("mouseenter", (e) => {
+  console.log(e.target.id);
+  // 다음 위치 설정
+  const nextPosition = [currentPosition[0], currentPosition[1] - 1];
+  // FLAG: 기본값 true(이동 가능)
+  let canUserMove = true;
+  // block 생성
+  let block = currentBlock;
 
-      // 현재 위치에서 한 칸 왼 쪽을 탐색
-      for (
-        let i = currentPosition[0];
-        i < currentPosition[0] + block.length;
-        i++
+  // 현재 위치에서 한 칸 왼 쪽을 탐색
+  for (let i = currentPosition[0]; i < currentPosition[0] + block.length; i++) {
+    // 왼쪽으로 갈 수 없는 경우 반복문 escape
+    if (!canUserMove) break;
+    for (
+      let j = currentPosition[1];
+      j < currentPosition[1] + block.length;
+      j++
+    ) {
+      if (
+        (tetrisData[i][j] === 1 && currentPosition[1] === 0) ||
+        tetrisData[i][j - 1] === 2
       ) {
-        // 왼쪽으로 갈 수 없는 경우 반복문 escape
-        if (!canUserMove) break;
-        for (
-          let j = currentPosition[1];
-          j < currentPosition[1] + block.length;
-          j++
-        ) {
-          if (
-            (tetrisData[i][j] === 1 && currentPosition[1] === 0) ||
-            tetrisData[i][j - 1] === 2
-          ) {
-            // 왼쪽 끝에 도달한 경우 || 왼쪽에 값이 2인 block이 있는 경우
-            canUserMove = false;
-          }
-        }
+        // 왼쪽 끝에 도달한 경우 || 왼쪽에 값이 2인 block이 있는 경우
+        canUserMove = false;
       }
-
-      // canUserMove === true
-      if (canUserMove) {
-        currentPosition = nextPosition;
-
-        // tetrisData 배열에 현재 블록 위치 업데이트
-        tetrisData.forEach((tr, i) => {
-          for (let j = 0; j < tr.length; j++) {
-            const td = tr[j];
-            if (tetrisData[i][j - 1] === 0 && td !== 2) {
-              tetrisData[i][j - 1] = td;
-              tetrisData[i][j] = 0;
-            }
-          }
-        });
-        draw();
-      }
-      // 그 외의 경우
-      break;
-    }
-
-    case "ArrowRight": {
-      // 다음 위치 설정
-      const nextPosition = [currentPosition[0], currentPosition[1] + 1];
-      // FLAG: 기본값 true(이동 가능)
-      let canUserMove = true;
-      // block 생성
-      let block = currentBlock;
-
-      // 현재 위치에서 한 칸 오른쪽을 탐색
-      for (
-        let i = currentPosition[0];
-        i < currentPosition[0] + block.length;
-        i++
-      ) {
-        // 오른쪽으로 갈 수 없는 경우 반복문 escape
-        if (!canUserMove) break;
-        for (
-          let j = currentPosition[1];
-          j < currentPosition[1] + block.length;
-          j++
-        ) {
-          if (
-            tetrisData[i][j] === 1 &&
-            ((tetrisData[i] && tetrisData[i][j + 1] === undefined) ||
-              (tetrisData[i] && tetrisData[i][j + 1] === 2))
-          ) {
-            // 오른쪽 끝에 도달한 경우 || 오른쪽에 값이 2인 block이 있는 경우
-            canUserMove = false;
-          }
-        }
-      }
-
-      // canUserMove === true
-      if (canUserMove) {
-        currentPosition = nextPosition;
-
-        // tetrisData 배열에 현재 블록 위치 업데이트
-        tetrisData.forEach((tr, i) => {
-          for (var j = tr.length - 1; j >= 0; j--) {
-            const td = tr[j];
-            if (tetrisData[i][j + 1] === 0 && td !== 2) {
-              tetrisData[i][j + 1] = td;
-              tetrisData[i][j] = 0;
-            }
-          }
-        });
-        draw();
-      }
-      break;
-    }
-
-    case "ArrowDown": {
-      while (loop()) {}
-      break;
     }
   }
+
+  // canUserMove === true
+  if (canUserMove) {
+    currentPosition = nextPosition;
+
+    // tetrisData 배열에 현재 블록 위치 업데이트
+    tetrisData.forEach((tr, i) => {
+      for (let j = 0; j < tr.length; j++) {
+        const td = tr[j];
+        if (tetrisData[i][j - 1] === 0 && td !== 2) {
+          tetrisData[i][j - 1] = td;
+          tetrisData[i][j] = 0;
+        }
+      }
+    });
+    draw();
+  }
 });
+
+// 마우스 커서가 #right와 충돌
+cursorRight.addEventListener("mouseenter", (e) => {
+  console.log(e.target.id);
+  // 다음 위치 설정
+  const nextPosition = [currentPosition[0], currentPosition[1] + 1];
+  // FLAG: 기본값 true(이동 가능)
+  let canUserMove = true;
+  // block 생성
+  let block = currentBlock;
+
+  // 현재 위치에서 한 칸 오른쪽을 탐색
+  for (let i = currentPosition[0]; i < currentPosition[0] + block.length; i++) {
+    // 오른쪽으로 갈 수 없는 경우 반복문 escape
+    if (!canUserMove) break;
+    for (
+      let j = currentPosition[1];
+      j < currentPosition[1] + block.length;
+      j++
+    ) {
+      if (
+        tetrisData[i][j] === 1 &&
+        ((tetrisData[i] && tetrisData[i][j + 1] === undefined) ||
+          (tetrisData[i] && tetrisData[i][j + 1] === 2))
+      ) {
+        // 오른쪽 끝에 도달한 경우 || 오른쪽에 값이 2인 block이 있는 경우
+        canUserMove = false;
+      }
+    }
+  }
+
+  // canUserMove === true
+  if (canUserMove) {
+    currentPosition = nextPosition;
+
+    // tetrisData 배열에 현재 블록 위치 업데이트
+    tetrisData.forEach((tr, i) => {
+      for (var j = tr.length - 1; j >= 0; j--) {
+        const td = tr[j];
+        if (tetrisData[i][j + 1] === 0 && td !== 2) {
+          tetrisData[i][j + 1] = td;
+          tetrisData[i][j] = 0;
+        }
+      }
+    });
+    draw();
+  }
+});
+
+// // Keyboard 조작을 위한 event listener 추가
+// window.addEventListener("keydown", (e) => {
+//   // 누르는 key의 방향에 따라 분기문 작성
+//   switch (e.code) {
+//     case "ArrowLeft": {
+//       // 다음 위치 설정
+//       const nextPosition = [currentPosition[0], currentPosition[1] - 1];
+//       // FLAG: 기본값 true(이동 가능)
+//       let canUserMove = true;
+//       // block 생성
+//       let block = currentBlock;
+
+//       // 현재 위치에서 한 칸 왼 쪽을 탐색
+//       for (
+//         let i = currentPosition[0];
+//         i < currentPosition[0] + block.length;
+//         i++
+//       ) {
+//         // 왼쪽으로 갈 수 없는 경우 반복문 escape
+//         if (!canUserMove) break;
+//         for (
+//           let j = currentPosition[1];
+//           j < currentPosition[1] + block.length;
+//           j++
+//         ) {
+//           if (
+//             (tetrisData[i][j] === 1 && currentPosition[1] === 0) ||
+//             tetrisData[i][j - 1] === 2
+//           ) {
+//             // 왼쪽 끝에 도달한 경우 || 왼쪽에 값이 2인 block이 있는 경우
+//             canUserMove = false;
+//           }
+//         }
+//       }
+
+//       // canUserMove === true
+//       if (canUserMove) {
+//         currentPosition = nextPosition;
+
+//         // tetrisData 배열에 현재 블록 위치 업데이트
+//         tetrisData.forEach((tr, i) => {
+//           for (let j = 0; j < tr.length; j++) {
+//             const td = tr[j];
+//             if (tetrisData[i][j - 1] === 0 && td !== 2) {
+//               tetrisData[i][j - 1] = td;
+//               tetrisData[i][j] = 0;
+//             }
+//           }
+//         });
+//         draw();
+//       }
+//       // 그 외의 경우
+//       break;
+//     }
+
+//     case "ArrowRight": {
+//       // 다음 위치 설정
+//       const nextPosition = [currentPosition[0], currentPosition[1] + 1];
+//       // FLAG: 기본값 true(이동 가능)
+//       let canUserMove = true;
+//       // block 생성
+//       let block = currentBlock;
+
+//       // 현재 위치에서 한 칸 오른쪽을 탐색
+//       for (
+//         let i = currentPosition[0];
+//         i < currentPosition[0] + block.length;
+//         i++
+//       ) {
+//         // 오른쪽으로 갈 수 없는 경우 반복문 escape
+//         if (!canUserMove) break;
+//         for (
+//           let j = currentPosition[1];
+//           j < currentPosition[1] + block.length;
+//           j++
+//         ) {
+//           if (
+//             tetrisData[i][j] === 1 &&
+//             ((tetrisData[i] && tetrisData[i][j + 1] === undefined) ||
+//               (tetrisData[i] && tetrisData[i][j + 1] === 2))
+//           ) {
+//             // 오른쪽 끝에 도달한 경우 || 오른쪽에 값이 2인 block이 있는 경우
+//             canUserMove = false;
+//           }
+//         }
+//       }
+
+//       // canUserMove === true
+//       if (canUserMove) {
+//         currentPosition = nextPosition;
+
+//         // tetrisData 배열에 현재 블록 위치 업데이트
+//         tetrisData.forEach((tr, i) => {
+//           for (var j = tr.length - 1; j >= 0; j--) {
+//             const td = tr[j];
+//             if (tetrisData[i][j + 1] === 0 && td !== 2) {
+//               tetrisData[i][j + 1] = td;
+//               tetrisData[i][j] = 0;
+//             }
+//           }
+//         });
+//         draw();
+//       }
+//       break;
+//     }
+
+//     case "ArrowDown": {
+//       while (loop()) {}
+//       break;
+//     }
+//   }
+// });
 
 /*
     함수 실행
