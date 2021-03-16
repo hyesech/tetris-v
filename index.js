@@ -18,10 +18,10 @@ var currentBlock = [];
 var currentPosition = []; // 변경된다.
 
 /*
-    주요 함수: INIT, CREATE, DROP
+    주요 함수: INIT(), CREATE(), DROP()
 */
 
-// INIT: 게임 초기화
+// INIT(): 게임 초기화
 const init = () => {
   const fragment = document.createDocumentFragment();
   [...Array(COLS).keys()].forEach(() => {
@@ -40,7 +40,7 @@ const init = () => {
   tetris.appendChild(fragment);
 };
 
-// CREATE: 블록 생성 + 화면에 그리기
+// CREATE(): 블록 생성 + 화면에 그리기
 const create = () => {
   console.log("FUNC: CREATE");
 
@@ -132,7 +132,7 @@ const loop = () => {
 };
 
 /*
-    Util 함수: draw, checkLines, is
+    UTIL 함수: draw, checkLines
 */
 const draw = () => {
   console.log("func: draw");
@@ -151,12 +151,12 @@ const draw = () => {
 };
 
 const checkLines = () => {
-  console.log("func: check rows");
+  console.log("func: check lines");
 
   // 완성된 줄(Line)의 index 값을 담을 배열
-  const completeLine = [];
+  const completeLines = [];
 
-  // tetrisData를 tr(줄) 단위로 순회: 모든 칸이 2인 경우 index 값을 completeLine 배열에 push
+  // 모든 칸이 2인 경우 index 값을 completeLines 배열에 push
   tetrisData.forEach((tr, i) => {
     let lineCount = 0;
     tr.forEach((td, j) => {
@@ -165,14 +165,17 @@ const checkLines = () => {
       }
     });
     if (lineCount === 10) {
-      completeLine.push(i);
+      completeLines.push(i);
     }
   });
 
-  // completeLine에 담긴 index 값에 해당하는 줄 값을 0으로 변경
-  // completeLine 배열의 길이 (0이 된 줄 수) 만큼 tetrisData 배열의 앞쪽에 새 tr 배열을 추가
-  completeLine.forEach((tr, i) => {});
-  console.log(completeLine);
+  // completeLines에 담긴 값을 index로 갖는 tetrisData 삭제
+  tetrisData = tetrisData.filter((tr, i) => !completeLines[i]);
+
+  // tetrisData 배열의 앞쪽에 새 배열을 추가
+  for (let i = 0; i < completeLines.length; i++) {
+    tetrisData.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  }
 };
 
 /*
@@ -308,7 +311,5 @@ window.addEventListener("keyup", (e) => {
 */
 
 init();
-
 create();
-
-setInterval(loop, 500);
+setInterval(loop, 400);
