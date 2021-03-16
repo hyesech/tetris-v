@@ -156,7 +156,7 @@ const checkLines = () => {
   // 완성된 줄(Line)의 index 값을 담을 배열
   const completeLines = [];
 
-  // 모든 칸이 2인 경우 index 값을 completeLines 배열에 push
+  // 모든 칸이 채워져 있는 경우 index 값을 completeLines 배열에 push
   tetrisData.forEach((tr, i) => {
     let lineCount = 0;
     tr.forEach((td, j) => {
@@ -169,13 +169,16 @@ const checkLines = () => {
     }
   });
 
+  const completeLineNum = completeLines.length;
   // completeLines에 담긴 값을 index로 갖는 tetrisData 삭제
-  tetrisData = tetrisData.filter((tr, i) => !completeLines[i]);
+  tetrisData = tetrisData.filter((tr, i) => !completeLines.includes(i));
 
   // tetrisData 배열의 앞쪽에 새 배열을 추가
-  for (let i = 0; i < completeLines.length; i++) {
+  for (let i = 0; i < completeLineNum; i++) {
     tetrisData.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   }
+  console.log(tetrisData);
+  console.log(completeLines);
 };
 
 /*
