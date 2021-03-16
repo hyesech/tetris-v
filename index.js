@@ -6,6 +6,7 @@ const COLS = 20; // 세로
 const tetris = document.querySelector("#tetris");
 const cursorLeft = document.querySelector("#left");
 const cursorRight = document.querySelector("#right");
+const cursorDown = document.querySelector("#down");
 const blockData = {
   name: "block",
   shape: [
@@ -284,6 +285,10 @@ cursorRight.addEventListener("mouseenter", (e) => {
     });
     draw();
   }
+});
+
+cursorDown.addEventListener("mouseenter", (e) => {
+  while (loop()) {}
 });
 
 /*
