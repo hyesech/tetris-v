@@ -1,6 +1,6 @@
 // 게임 상수 선언
-const COLS = 20; // 세로
 const ROWS = 10; // 가로
+const COLS = 20; // 세로
 
 // 게임 상수 선언
 const tetris = document.querySelector("#tetris");
@@ -15,15 +15,15 @@ const blockData = {
 };
 
 // 전역 변수 선언
-var tetrisData = [];
-var currentBlock = [];
-var currentPosition = []; // 변경된다.
+let gameBoard = [];
+let currentBlock = [];
+let currentPosition = []; // 변경된다.
 
 /*
     주요 함수: INIT(), CREATE(), DROP()
 */
 
-// INIT(): 게임 초기화
+// INIT
 const init = () => {
   const fragment = document.createDocumentFragment();
   [...Array(COLS).keys()].forEach(() => {
@@ -37,7 +37,7 @@ const init = () => {
 
     // 0으로 전체 초기화
     const column = Array(ROWS).fill(0);
-    tetrisData.push(column);
+    gameBoard.push(column);
   });
   tetris.appendChild(fragment);
 };
@@ -56,9 +56,8 @@ const create = () => {
   // 게임 종료 판정
   currentBlock.forEach((tr, i) => {
     tr.forEach((td, j) => {
-      if (tetrisData[i][j + 3]) {
+      if (gameBoard[i][j + 3]) {
         isGameOver = true;
-        console.log("종료!");
       }
     });
   });
@@ -66,7 +65,7 @@ const create = () => {
   // 화면 그리기
   currentBlock.forEach((tr, i) => {
     tr.forEach((td, j) => {
-      tetrisData[i][j + 4] = td;
+      gameBoard[i][j + 4] = td;
     });
   });
 
@@ -102,10 +101,10 @@ const loop = () => {
       j < currentPosition[1] + block.length;
       j++
     ) {
-      if (tetrisData[i][j] === 1) {
+      if (gameBoard[i][j] === 1) {
         // 움직일 수 있는 Block인 경우
         movingBlocks.push([i, j]);
-        if (tetrisData[i + 1] === undefined || tetrisData[i + 1][j] === 2) {
+        if (gameBoard[i + 1] === undefined || gameBoard[i + 1][j] === 2) {
           // 최하단에 도달한 경우 || 아래에 값이 2인 block이 있는 경우
           canMove = false;
         }
@@ -115,13 +114,13 @@ const loop = () => {
 
   // FLAG 상태에 따라 작업 분기
   if (canMove) {
-    // tetrisData 배열에 현재 블록 위치 업데이트
-    for (let i = tetrisData.length - 1; i >= 0; i--) {
-      const tr = tetrisData[i];
+    // gameBoard 배열에 현재 블록 위치 업데이트
+    for (let i = gameBoard.length - 1; i >= 0; i--) {
+      const tr = gameBoard[i];
       tr.forEach((td, j) => {
-        if (td === 1 && tetrisData[i + 1] && tetrisData[i + 1][j] !== 2) {
-          tetrisData[i + 1][j] = td;
-          tetrisData[i][j] = 0;
+        if (td === 1 && gameBoard[i + 1] && gameBoard[i + 1][j] !== 2) {
+          gameBoard[i + 1][j] = td;
+          gameBoard[i][j] = 0;
         }
       });
     }
@@ -133,10 +132,10 @@ const loop = () => {
     return true;
   } else if (!canMove) {
     movingBlocks.forEach((cell) => {
-      tetrisData[cell[0]][cell[1]] = 2;
+      gameBoard[cell[0]][cell[1]] = 2;
     });
 
-    // 줄 삭제 가능한지 체크: rows가 전부 1인 경우
+    // 삭제 가능한 줄 체크
     checkLines();
     // 다음 위치에 새 블록 생성
     create();
@@ -147,10 +146,10 @@ const loop = () => {
 };
 
 /*
-    UTIL 함수: draw, checkLines, getMousePosition
+    UTIL 함수: draw, checkLines
 */
 const draw = () => {
-  tetrisData.forEach((tr, i) => {
+  gameBoard.forEach((tr, i) => {
     tr.forEach((td, j) => {
       if (td === 0) {
         tetris.children[i].children[j].className = "white";
@@ -168,7 +167,7 @@ const checkLines = () => {
   const completeLines = [];
 
   // 모든 칸이 채워져 있는 경우 index 값을 completeLines 배열에 push
-  tetrisData.forEach((tr, i) => {
+  gameBoard.forEach((tr, i) => {
     let lineCount = 0;
     tr.forEach((td, j) => {
       if (td === 2) {
@@ -181,12 +180,12 @@ const checkLines = () => {
   });
 
   const completeLineNum = completeLines.length;
-  // completeLines에 담긴 값을 index로 갖는 tetrisData 삭제
-  tetrisData = tetrisData.filter((tr, i) => !completeLines.includes(i));
+  // completeLines에 담긴 값을 index로 갖는 gameBoard 삭제
+  gameBoard = gameBoard.filter((tr, i) => !completeLines.includes(i));
 
-  // tetrisData 배열의 앞쪽에 새 배열을 추가
+  // gameBoard 배열의 앞쪽에 새 배열을 추가
   for (let i = 0; i < completeLineNum; i++) {
-    tetrisData.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    gameBoard.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   }
 };
 
@@ -196,7 +195,6 @@ const checkLines = () => {
 
 // 마우스 커서가 #left와 충돌
 cursorLeft.addEventListener("mouseenter", (e) => {
-  console.log(e.target.id);
   // 다음 위치 설정
   const nextPosition = [currentPosition[0], currentPosition[1] - 1];
   // FLAG: 기본값 true(이동 가능)
@@ -214,8 +212,8 @@ cursorLeft.addEventListener("mouseenter", (e) => {
       j++
     ) {
       if (
-        (tetrisData[i][j] === 1 && currentPosition[1] === 0) ||
-        tetrisData[i][j - 1] === 2
+        (gameBoard[i][j] === 1 && currentPosition[1] === 0) ||
+        gameBoard[i][j - 1] === 2
       ) {
         // 왼쪽 끝에 도달한 경우 || 왼쪽에 값이 2인 block이 있는 경우
         canUserMove = false;
@@ -227,13 +225,13 @@ cursorLeft.addEventListener("mouseenter", (e) => {
   if (canUserMove) {
     currentPosition = nextPosition;
 
-    // tetrisData 배열에 현재 블록 위치 업데이트
-    tetrisData.forEach((tr, i) => {
+    // gameBoard 배열에 현재 블록 위치 업데이트
+    gameBoard.forEach((tr, i) => {
       for (let j = 0; j < tr.length; j++) {
         const td = tr[j];
-        if (tetrisData[i][j - 1] === 0 && td !== 2) {
-          tetrisData[i][j - 1] = td;
-          tetrisData[i][j] = 0;
+        if (gameBoard[i][j - 1] === 0 && td !== 2) {
+          gameBoard[i][j - 1] = td;
+          gameBoard[i][j] = 0;
         }
       }
     });
@@ -243,7 +241,6 @@ cursorLeft.addEventListener("mouseenter", (e) => {
 
 // 마우스 커서가 #right와 충돌
 cursorRight.addEventListener("mouseenter", (e) => {
-  console.log(e.target.id);
   // 다음 위치 설정
   const nextPosition = [currentPosition[0], currentPosition[1] + 1];
   // FLAG: 기본값 true(이동 가능)
@@ -261,9 +258,9 @@ cursorRight.addEventListener("mouseenter", (e) => {
       j++
     ) {
       if (
-        tetrisData[i][j] === 1 &&
-        ((tetrisData[i] && tetrisData[i][j + 1] === undefined) ||
-          (tetrisData[i] && tetrisData[i][j + 1] === 2))
+        gameBoard[i][j] === 1 &&
+        ((gameBoard[i] && gameBoard[i][j + 1] === undefined) ||
+          (gameBoard[i] && gameBoard[i][j + 1] === 2))
       ) {
         // 오른쪽 끝에 도달한 경우 || 오른쪽에 값이 2인 block이 있는 경우
         canUserMove = false;
@@ -275,13 +272,13 @@ cursorRight.addEventListener("mouseenter", (e) => {
   if (canUserMove) {
     currentPosition = nextPosition;
 
-    // tetrisData 배열에 현재 블록 위치 업데이트
-    tetrisData.forEach((tr, i) => {
+    // gameBoard 배열에 현재 블록 위치 업데이트
+    gameBoard.forEach((tr, i) => {
       for (var j = tr.length - 1; j >= 0; j--) {
         const td = tr[j];
-        if (tetrisData[i][j + 1] === 0 && td !== 2) {
-          tetrisData[i][j + 1] = td;
-          tetrisData[i][j] = 0;
+        if (gameBoard[i][j + 1] === 0 && td !== 2) {
+          gameBoard[i][j + 1] = td;
+          gameBoard[i][j] = 0;
         }
       }
     });
