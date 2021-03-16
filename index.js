@@ -40,30 +40,46 @@ const init = () => {
   tetris.appendChild(fragment);
 };
 
-// CREATE(): 블록 생성 + 화면에 그리기
+// CREATE
 const create = () => {
-  console.log("FUNC: CREATE");
-
   // 블록 스폰 위치: 가상의 맨 윗줄이 있는 것처럼 연산
   currentPosition = [0, 4];
 
   // 블록 데이터 생성: 맨 윗줄을 삭제하고 연산한다.
   currentBlock = blockData.shape;
 
+  // 게임 종료 판정 FLAG
+  let isGameOver = false;
+
+  // 게임 종료 판정
+  currentBlock.forEach((tr, i) => {
+    tr.forEach((td, j) => {
+      if (tetrisData[i][j + 3]) {
+        isGameOver = true;
+        console.log("종료!");
+      }
+    });
+  });
+
+  // 화면 그리기
   currentBlock.forEach((tr, i) => {
     tr.forEach((td, j) => {
       tetrisData[i][j + 4] = td;
     });
   });
 
-  // 블록 데이터를 바탕으로 화면에 그리기
-  draw();
+  // FLAG
+  if (isGameOver) {
+    clearInterval(game);
+    alert("GAME OVER");
+    window.location.reload();
+  } else {
+    draw();
+  }
 };
 
 // LOOP: 1초마다 반복하며 블록을 한 칸 아래로 이동
 const loop = () => {
-  console.log("FUNC: LOOP");
-
   // 다음 위치 설정
   const nextPosition = [currentPosition[0] + 1, currentPosition[1]];
 
@@ -97,8 +113,6 @@ const loop = () => {
 
   // FLAG 상태에 따라 작업 분기
   if (canMove) {
-    console.log("이동 가능");
-
     // tetrisData 배열에 현재 블록 위치 업데이트
     for (let i = tetrisData.length - 1; i >= 0; i--) {
       const tr = tetrisData[i];
@@ -116,7 +130,6 @@ const loop = () => {
     // Space 구현
     return true;
   } else if (!canMove) {
-    console.log("이동불가 ---> 색상 변경");
     movingBlocks.forEach((cell) => {
       tetrisData[cell[0]][cell[1]] = 2;
     });
@@ -135,8 +148,6 @@ const loop = () => {
     UTIL 함수: draw, checkLines
 */
 const draw = () => {
-  console.log("func: draw");
-
   tetrisData.forEach((tr, i) => {
     tr.forEach((td, j) => {
       if (td === 0) {
@@ -151,8 +162,6 @@ const draw = () => {
 };
 
 const checkLines = () => {
-  console.log("func: check lines");
-
   // 완성된 줄(Line)의 index 값을 담을 배열
   const completeLines = [];
 
@@ -177,8 +186,6 @@ const checkLines = () => {
   for (let i = 0; i < completeLineNum; i++) {
     tetrisData.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   }
-  console.log(tetrisData);
-  console.log(completeLines);
 };
 
 /*
@@ -186,12 +193,10 @@ const checkLines = () => {
 */
 
 // Keyboard 조작을 위한 event listener 추가
-window.addEventListener("keyup", (e) => {
+window.addEventListener("keydown", (e) => {
   // 누르는 key의 방향에 따라 분기문 작성
   switch (e.code) {
     case "ArrowLeft": {
-      // 왼 쪽으로 한 칸 이동
-      console.log("Left");
       // 다음 위치 설정
       const nextPosition = [currentPosition[0], currentPosition[1] - 1];
       // FLAG: 기본값 true(이동 가능)
@@ -212,14 +217,11 @@ window.addEventListener("keyup", (e) => {
           j < currentPosition[1] + block.length;
           j++
         ) {
-          console.log(currentPosition[1]);
-          console.log(tetrisData[1]);
           if (
             (tetrisData[i][j] === 1 && currentPosition[1] === 0) ||
             tetrisData[i][j - 1] === 2
           ) {
             // 왼쪽 끝에 도달한 경우 || 왼쪽에 값이 2인 block이 있는 경우
-            console.log("cant go left");
             canUserMove = false;
           }
         }
@@ -246,9 +248,6 @@ window.addEventListener("keyup", (e) => {
     }
 
     case "ArrowRight": {
-      // 오른 쪽으로 한 칸 이동
-      console.log("Right");
-
       // 다음 위치 설정
       const nextPosition = [currentPosition[0], currentPosition[1] + 1];
       // FLAG: 기본값 true(이동 가능)
@@ -269,15 +268,12 @@ window.addEventListener("keyup", (e) => {
           j < currentPosition[1] + block.length;
           j++
         ) {
-          console.log(currentPosition[1]);
-          console.log(tetrisData[1]);
           if (
             tetrisData[i][j] === 1 &&
             ((tetrisData[i] && tetrisData[i][j + 1] === undefined) ||
               (tetrisData[i] && tetrisData[i][j + 1] === 2))
           ) {
             // 오른쪽 끝에 도달한 경우 || 오른쪽에 값이 2인 block이 있는 경우
-            console.log("cant go right");
             canUserMove = false;
           }
         }
@@ -315,4 +311,4 @@ window.addEventListener("keyup", (e) => {
 
 init();
 create();
-setInterval(loop, 400);
+let game = setInterval(loop, 400);
